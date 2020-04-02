@@ -23,6 +23,10 @@ setup(
     author_email="admin@nsemble.ai",
     license="MIT",
     packages=["nsvision"],
+    install_requires=[
+        'numpy==1.18.2',
+        'Pillow==7.0.0'
+    ],
     classifiers=classifiers,
     scripts=["bin/split_data"],
 )
