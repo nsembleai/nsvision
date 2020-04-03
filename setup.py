@@ -1,5 +1,5 @@
 from setuptools import setup
-
+from nsvision import __version__
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
@@ -13,7 +13,7 @@ classifiers = [
 
 setup(
     name="nsvision",
-    version="0.0.1",
+    version=__version__,
     python_requires=">=3.6",
     description="nsvision - Computer Vision Wrapper built on top of PIL, cv2 and Numpy",
     long_description=long_description,
