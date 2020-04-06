@@ -8,7 +8,7 @@ def live_video(source=0,color_mode=None,resize=None,preprocess_function=None):
 	Displays live stream on window. You can press `q` to stop.
 	Parameters:
 		source: Camera port default is 0
-		grey_scale: convert image to greyscale
+		color_mode: convert image to 'rgb' or 'grayscale'
 		resize: (height , width) tuple resize incoming video frame
 		preprocess_function: Submit preprocessing function if you need extra preprocessing for image
 		Preprocessing Function Syntax:
@@ -50,7 +50,7 @@ def live_video(source=0,color_mode=None,resize=None,preprocess_function=None):
 			frame = preprocess_function(frame)
 
 		# Display the resulting frame
-		cv2.imshow('frame', frame) #show image as BGR on screen
+		cv2.imshow('frame', frame) #show image on screen
 
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			break
