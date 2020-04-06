@@ -167,8 +167,8 @@ def imshow(image,is_cv2_image=False):
     """
     if hasattr(image,'show'):
         image.show()
-    
-    get_image_from_array(image,is_cv2_image=is_cv2_image).show()
+    else:
+        get_image_from_array(image,is_cv2_image=is_cv2_image).show()
 
 
 def imsave(path,image,file_format = None ,is_cv2_image=False,denormalize=True,**kwargs):
