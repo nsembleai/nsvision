@@ -72,6 +72,31 @@ reduced_image = nv.reduce_dims(image_array, axis = 0)
 7. Live Video Streaming
 ```python
 nv.live_video(source=0, color_mode = 'rgb', resize=(224,224))
+```
+
+8. Encode image to Base64 String
+```python
+nv.image_to_base64(image_from_array,file_format='PNG')
+#encodes image as base64 string.
+#Mostly helpful for sending image to API (Tensorflow Serving)
+#Can be used for production
+```
+
+9. Decode Base64 Image String
+```python
+decoded_image_bytes = nv.base64_to_bytes(base64_encoded_image)
+#decode base64 image string and convert to bytes. Later on you can use nv.imread(decoded_image_bytes)
+```
+
+10. Image splitter using directly in jupyter notebook
+```python
+from nsvision import classifier
+classifier.split_image_data(
+    data_dir = "images/cats_vs_dogs",
+    ratio=(40,30,20,10))
+#splits images from given folder as per train, val , test and QA.
+#Mostly helpful for image classification problems
+```
 
 #opens a window showing video from source , source 0 is webcam
 ```

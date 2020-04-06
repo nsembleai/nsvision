@@ -14,8 +14,8 @@ try:
     from numpy import max as npmax
     from numpy import min as npmin
 except ImportError:
-    raise ImportError('Could not import PIL.Image. or Numpy'
-                          'this library requires PIL >= 7.0.0 and numpy >= 1.18.1')
+    raise ImportError('Could not import PIL.Image. or Numpy '
+                          'This library requires PIL >= 7.0.0 and numpy >= 1.18.1')
 
 
 interpolation_methods = {
@@ -185,12 +185,12 @@ def imsave(path,image,file_format = None ,is_cv2_image=False,denormalize=True,**
     """
     if hasattr(image,'save'): 
         image.save(path,file_format=file_format,**kwargs)
-
-    image = get_image_from_array(image, denormalize=denormalize , is_cv2_image=is_cv2_image)
-    if image.mode == 'RGBA' and (file_format == 'jpg' or file_format == 'jpeg'):
-        warn('JPG format does not support RGBA images, converting to RGB.')
-        image = image.convert('RGB')
-    image.save(path, format=file_format, **kwargs)
+    else:
+        image = get_image_from_array(image, denormalize=denormalize , is_cv2_image=is_cv2_image)
+        if image.mode == 'RGBA' and (file_format == 'jpg' or file_format == 'jpeg'):
+            warn('JPG format does not support RGBA images, converting to RGB.')
+            image = image.convert('RGB')
+        image.save(path, format=file_format, **kwargs)
 
 
 def reduce_dims(array,axis=0):
