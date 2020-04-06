@@ -112,3 +112,48 @@ For more information about using command line tool:
 ```bash
 split_data -h
 ```
+
+### Command line (rename files script)<br>
+Use commandline tool for renaming the files in a folder
+
+* Syntax
+
+```bash
+rename_files -n common name -f folder path -i number from which renaming to be started
+```
+
+* example
+
+```bash
+rename_files -n "image_" -f "./image_folder" -i 1
+```
+This will rename the files in the image_folder 
+
+For more information about using command line tool:
+```bash
+rename_files -h
+```
+
+### Command line (tumor data extractor script)<br>
+Use commandline tool specifically for extracting and converting the mat files of brain tumor image data from the downloaded zip file using this [link](https://figshare.com/articles/brain_tumor_dataset/1512427)
+
+* Syntax
+
+```bash
+tumor_data_extractor -b folder path of the downloaded zip folder -e extension in which mat files to be converted(default - jpg)
+```
+
+* example
+
+```bash
+tumor_data_extractor -b "./1512427.zip" -e png
+```
+This will convert all the .mat file in the above zip folder into the given extension file format(default .jpg)
+All the converted files will be save in separate folder named brain_tumor_data in their respective tumor name folder
+
+For more information about using command line tool:
+```bash
+tumor_data_extractor -h
+```
+
+

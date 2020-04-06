@@ -1,6 +1,16 @@
 import os 
 from shutil import copy2
 from random import sample
+from numpy import array as nparray
+from nsvision import get_image_from_array
+try:
+	from natsort import natsorted
+	from h5py import File as h5py_file
+except:
+	natsorted = None
+	h5py_file = None
+
+
 def check_ratio_sum(ratio):
 	"""
 	Check the given ratio is valid or not. Sum of ratio should be 100
@@ -14,6 +24,7 @@ def check_ratio_sum(ratio):
 	if total != 100:
 		raise ValueError("Sum of all the input ratio should be equal to 100 ")
 	return train_ratio, val_ratio, test_ratio, qa_ratio
+
 
 def image_frequency(num,ratio):
 	"""
@@ -91,10 +102,12 @@ def split_image_data(data_dir,ratio,generate_labels_txt=False):
 			split_lst = [train_list,val_list,test_list,qa_list]
 			for i,j in zip(folder_names,split_lst):
 				for img in j:
-					src_path = os.path.join(class_path,img)
-					dst_path = os.path.join(os.path.join(model_data_dir,i),class_name)
-					os.makedirs(dst_path,exist_ok=True)
-					copy2(src_path,dst_path)
+					img_path = os.path.join(class_path,img)
+					if os.path.isfile(img_path):
+						# src_path = os.path.join(class_path,img)
+						dst_path = os.path.join(os.path.join(model_data_dir,i),class_name)
+						os.makedirs(dst_path,exist_ok=True)
+						copy2(img_path,dst_path)
 		if generate_labels_txt:
 			print("Generating labels.txt")
 			with open(os.path.join(os.path.dirname(data_dir),'labels.txt'),'w') as labels_file:
@@ -102,3 +115,56 @@ def split_image_data(data_dir,ratio,generate_labels_txt=False):
 	except:
 		raise Exception("Failed to split data please check folder structure or check your OS Permission")
 	print("Splitting completed",f"Splitted data is stored at {model_data_dir}",sep='\n')
+
+
+def rename_files(name,folder_path,number):
+	"""
+	Rename the files in the given folder path
+	Parameter
+	---------
+	path - folder path
+	name - common name for renaming
+	number - number from which renaming is to start
+	"""
+	if natsorted is None:
+		raise ImportError("natsorted is required"
+			"Install it using `pip install natsort`")
+
+
+	folder_name = os.path.splitext(os.path.basename(folder_path))[0]
+	new_folder = folder_name + "_renamed"
+	dst_path = os.path.join(os.path.dirname(folder_path),new_folder)
+	os.makedirs(dst_path,exist_ok = True)
+	for i,filename in enumerate(natsorted(os.listdir(folder_path)),number):
+		old_path = os.path.join(folder_path,filename)
+		try:
+			extension = os.path.splitext(os.path.basename(old_path))[1]
+			if extension != '':
+				new_name = f"{name}_{i}{extension}"
+				new_path = os.path.join(dst_path,new_name)
+				copy2(old_path,new_path)
+		except:
+			raise Exception("Failed to rename the files in the given folder please check the folder structure or os permission")
+	print("Renaming completed",f"Renamed files are stored at {dst_path}",sep='\n')
+
+
+def get_image_from_mat(mat_filepath):
+	"""
+	This function convert .mat file to pil image
+	Arguments  -
+	Input - 1. matfile path (type - str)
+			2. data (type - boolean)
+
+	Output - pil_image, cjdata
+	"""
+	if h5py_file is None:
+		raise ImportError("h5py is required"
+			"Install using `pip install h5py`")
+
+
+	mat_file =  h5py_file(mat_filepath,'r')
+	cjdata = mat_file['cjdata']
+	image_array = nparray(cjdata.get('image')).astype("float64")
+	nv_image = get_image_from_array(image_array)
+	label = cjdata.get('label')[0][0]
+	return nv_image, label
