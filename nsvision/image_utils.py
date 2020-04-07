@@ -46,11 +46,14 @@ def imread(image_path,resize=None,color_mode = 'rgb',interpolation='nearest',dty
             Default: "nearest".
         dtype: Dtype to use for the returned array.
 
-        return_original: Returns original image array along with resized image array
+        return_original: Returns original image array along with resized image array.
+        	Default: False
+        	Note: This parameter only works with resize parameter
     # Returns
         A 3D Numpy array.
     # Raises
         ValueError: if invalid `image_path` or `resize` or `color_mode` or `interpolation` or `dtype` is passed.
+        ValueError: if return_original is True and resize is None
     """
     with pilimage.open(image_path) as image:
         if color_mode == 'grayscale':
@@ -82,6 +85,8 @@ def imread(image_path,resize=None,color_mode = 'rgb',interpolation='nearest',dty
         image_array = toarray(image,dtype=dtype)
     
     if return_original:
+        if resize is None:
+            raise ValueError("return_original parameter only works with resize parameter")
         return original_image_array , image_array
     
     return image_array
@@ -134,10 +139,10 @@ def get_image_from_array(img_array, denormalize=True, dtype='float32' ,is_cv2_im
             """expand image dimensions only if image is 2D grayscale
             manually adding channel dimension `1` to image (only for 2D grayscale image)"""
             img_array = expand_dims(img_array,axis=2)
-    else:
-        raise ValueError(f'Expected array with 3 dimensions Got array with shape {img_array.shape}\n'
-            'Incase you have used expand_dims for preprocessing, use nv.reduce_dims() for reducing expanded dimensions\n'
-            'make sure to check the axis position while expanding or reducing dimensions.')
+        else:
+            raise ValueError(f'Expected array with 3 dimensions Got array with shape {img_array.shape}\n'
+                'Incase you have used expand_dims for preprocessing, use nv.reduce_dims() for reducing expanded dimensions\n'
+                'make sure to check the axis position while expanding or reducing dimensions.')
 
     if is_cv2_image: #If numpy array is cv2 image
         img_array = img_array[...,::-1] #Convert BGR to RGB
