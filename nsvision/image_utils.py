@@ -30,14 +30,14 @@ interpolation_methods = {
 }
 
 
-def imread(image_path,resize=None,color_mode = 'rgb',interpolation='nearest',dtype='float32',return_original = False):
+def imread(image_path,resize=None,color_mode = None,interpolation='nearest',dtype='float32',return_original = False):
     """Converts a PIL Image instance to a Ndarray optimised for model.
     Parameters
     ----------
         image_path: Image Path.
         resize: (width,height) tuple
-        color_mode: default is `rgb`
-            you can also use color_mode as`rgba` or `grayscale`
+        color_mode: default is None
+            you can also use color_mode as `rgb` or `rgba` or `grayscale`
         interpolation:
             Interpolation method used to resample the image if the
             target size is different from that of the loaded image.
@@ -57,7 +57,8 @@ def imread(image_path,resize=None,color_mode = 'rgb',interpolation='nearest',dty
         ValueError: if invalid `image_path` or `resize` or `color_mode` or `interpolation` or `dtype` is passed.
         ValueError: if return_original is True and resize is None
     """
-    with pilimage.open(image_path) as image:
+    image = pilimage.open(image_path)
+    if color_mode is not None:
         if color_mode == 'grayscale':
             if image.mode not in ('L', 'I;16', 'I'):
                 image = image.convert('L')
@@ -69,22 +70,22 @@ def imread(image_path,resize=None,color_mode = 'rgb',interpolation='nearest',dty
                 image = image.convert('RGB')
         else:
             raise ValueError('color_mode must be "grayscale", "rgb", or "rgba"')
-            
-        if resize is not None:
-            if not isinstance(resize,tuple):
-                raise TypeError(f'resize must be tuple of (width,height) but got {resize} of type {type(resize)} instead')
-
-            if len(resize) != 2:
-                raise ValueError(f'Tuple with (width,height) required but got {resize} instead.')
-
-            original_image_array = toarray(image,dtype=dtype)
-            if image.size != resize:
-                if interpolation not in interpolation_methods:
-                    raise ValueError(f'Invalid interpolation, currently supported interpolations:{interpolation_methods.keys()}')
-                resample = interpolation_methods.get(interpolation)
-                image = image.resize(resize, resample)
         
-        image_array = toarray(image,dtype=dtype)
+    if resize is not None:
+        if not isinstance(resize,tuple):
+            raise TypeError(f'resize must be tuple of (width,height) but got {resize} of type {type(resize)} instead')
+
+        if len(resize) != 2:
+            raise ValueError(f'Tuple with (width,height) required but got {resize} instead.')
+
+        original_image_array = toarray(image,dtype=dtype)
+        if image.size != resize:
+            if interpolation not in interpolation_methods:
+                raise ValueError(f'Invalid interpolation, currently supported interpolations:{interpolation_methods.keys()}')
+            resample = interpolation_methods.get(interpolation)
+            image = image.resize(resize, resample)
+    
+    image_array = toarray(image,dtype=dtype)
     
     if return_original:
         if resize is None:
@@ -224,6 +225,7 @@ def imshow(image,is_cv2_image=False):
     Parameters
     image: PIL or CV2 image array
     is_cv2_image: If image_array is processed using cv2
+    notebook: Display inline on jupyter notebook cell output
     """
     if hasattr(image,'show'):
         image.show()
