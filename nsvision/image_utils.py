@@ -13,9 +13,11 @@ try:
     from numpy import squeeze
     from numpy import max as npmax
     from numpy import min as npmin
+    import requests as request_image
 except ImportError:
+    request_image = None
     raise ImportError('Could not import PIL.Image. or Numpy '
-                          'This library requires PIL >= 7.0.0 and numpy >= 1.18.1')
+        'This library requires PIL >= 7.0.0 and numpy >= 1.18.1')
 
 
 interpolation_methods = {
@@ -90,6 +92,51 @@ def imread(image_path,resize=None,color_mode = 'rgb',interpolation='nearest',dty
         return original_image_array , image_array
     
     return image_array
+
+
+def imurl(image_url, return_as_array = False , **kwargs):
+    """
+    Read image from url and convert to bytes or ndarray
+    
+    Paramters
+    ---------
+    image_url: http / https url of image
+    
+    return_as_array: Convert image directly to numpy array
+    	default: False
+    
+    kwargs:
+        Keyword arguments of imread can be passed for image modification:
+        Example:
+            imurl(image_url,to_array=True,resize=(224,224),color_mode = 'rgb',dtype='float32')
+            
+        Note: kwargs only works with return_as_array = True
+        
+    Returns:
+        PIL Image by default:
+        if return_as_array is True:
+            image will be returned as numpy array.
+        
+        Additional params like resize, color_mode, dtype , return_original can also be passed inorder to refine the image
+    """
+    if request_image is None:
+        raise ImportError('requests library is required from reading image from url '
+                         'Install it using pip install requests')
+    
+    
+    if not image_url.startswith('http'):
+        raise ValueError(f'invalid url found. Required http or https url but got {image_url} instead')
+        
+        
+    image_response = request_image.get(image_url)
+    imbytes = BytesIO(image_response.content)
+    
+    if return_as_array:
+        return imread(imbytes,**kwargs)
+    
+    image = pilimage.open(imbytes)
+    
+    return image
 
 
 def expand_dims(array,axis=0,normalize=False):

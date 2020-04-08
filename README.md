@@ -31,10 +31,21 @@ import nsvision as nv
 ```
 
 2. Reading an image for model
+
+* Reading from path
 ```python
 image_array = nv.imread("image_path", resize = (224,224), color_mode='rgb')
 
 #function returns image as numpy array
+```
+* Reading from url
+```python
+#Get image from url
+image = nv.imurl('https://example.com/example_image.jpeg')
+
+#Get image array from url
+url = 'https://example.com/example_image.jpeg'
+image_array = nv.imurl(url,return_as_array=True,resize=(150,150), color_mode = 'rgb')
 ```
 
 3. Display image (terminal / jupyter)
