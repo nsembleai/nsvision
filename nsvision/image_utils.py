@@ -5,7 +5,10 @@ from io import BytesIO
 from warnings import warn
 from re import sub
 from base64 import b64encode,b64decode
-
+try:
+    import requests as request_image
+except ImportError:
+    request_image = None
 try:
     from PIL import Image as pilimage
     from numpy import asarray as toarray
@@ -13,9 +16,7 @@ try:
     from numpy import squeeze
     from numpy import max as npmax
     from numpy import min as npmin
-    import requests as request_image
 except ImportError:
-    request_image = None
     raise ImportError('Could not import PIL.Image. or Numpy '
         'This library requires PIL >= 7.0.0 and numpy >= 1.18.1')
 
