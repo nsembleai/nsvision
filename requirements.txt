@@ -1,3 +1,2 @@
 numpy==1.18.2
 Pillow==7.0.0
-mkdocs==1.1
