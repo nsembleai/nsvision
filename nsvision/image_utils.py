@@ -120,6 +120,9 @@ def imurl(image_url, return_as_array = False , **kwargs):
             image will be returned as numpy array.
         
         Additional params like resize, color_mode, dtype , return_original can also be passed inorder to refine the image
+
+    Raises:
+        ImportError if requests library is not installed    
     """
     if request_image is None:
         raise ImportError('requests library is required from reading image from url '
@@ -154,7 +157,7 @@ def expand_dims(array,axis=0,normalize=False):
     Position in the expanded axes where the new axis is placed
     normalize: 
         True : return normalized image
-        False : return just image with expanded dimensions 
+        False : return just image array with expanded dimensions 
     """
     array = expand(array,axis=axis)
     if normalize:
@@ -226,7 +229,6 @@ def imshow(image,is_cv2_image=False):
     Parameters
     image: PIL or CV2 image array
     is_cv2_image: If image_array is processed using cv2
-    notebook: Display inline on jupyter notebook cell output
     """
     if hasattr(image,'show'):
         image.show()
@@ -241,10 +243,13 @@ def imsave(path,image,file_format = None ,is_cv2_image=False,denormalize=True,**
     ----------
     path: Location for writing image file
     image: image array
+    file_format: file_format for image
     is_cv2_image: Set to True if image is loaded using cv2 
         Default: False
     denormalize: Set to True if image was normalized during preprocessing
         Default: True
+    kwargs:
+        other keyword args if required by PIL
     """
     if hasattr(image,'save'): 
         image.save(path,file_format=file_format,**kwargs)
@@ -291,12 +296,14 @@ def base64_to_bytes(base64_encoded_image):
 def image_to_base64(image_from_array,file_format='PNG'):
     """
     Convert image from array to base64 string
-    parameters
+    Parameters
     ----------
     image_from_array: PIL image instance 
     	Incase image is numpy array, convert to image object using nv.get_image_from_array(array)
 
-    returns
+    file_format: file format of image
+    
+    Returns
     -------
     base64 encoded image as string
     """
