@@ -28,5 +28,10 @@ setup(
         'Pillow==7.0.0'
     ],
     classifiers=classifiers,
-    scripts=["bin/split_data","bin/rename_files","bin/tumor_data_extractor"],
+    scripts=[
+    "bin/split_data",
+    "bin/rename_files",
+    "bin/tumor_data_extractor",
+    "bin/split_data_gui"
+    ],
 )
