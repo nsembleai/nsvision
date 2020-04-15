@@ -9,6 +9,6 @@ pip install nsvision
 
 ## Documentation:
 
-Refer [nsvision documentation](https://nsvision.nsemble.ai)<br>
+Refer [nsvision](https://nsvision.nsemble.ai) for complete documentation<br>
 
-Read the docs link: [click here](https://nsvision.nsemble.ai)
+Read the docs link: [click here](https://nsvision.readthedocs.org)
