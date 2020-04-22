@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-
+import sys
 import argparse
 from nsvision import classifier
 
@@ -37,8 +36,8 @@ this works on any file types.
 
 parser =  argparse.ArgumentParser(
 		description = description,
-        usage = "Divide image data folder into train, validation, test and qa for image classification",
-        formatter_class=argparse.RawTextHelpFormatter
+		usage = "Divide image data folder into train, validation, test and qa for image classification",
+		formatter_class=argparse.RawTextHelpFormatter
 )
 
 required_args = parser.add_argument_group('required arguments:')
@@ -58,16 +57,19 @@ required_args.add_argument(
 )
 
 parser.add_argument(
-    "-l",
-    "--generate_labels_txt",
-    default=False,
-    help='Generate labels.txt containing class names'
+	"-l",
+	"--generate_labels_txt",
+	default=False,
+	help='Generate labels.txt containing class names'
 )
 
-args = parser.parse_args()
-
-print("Image data splitting tool",f"data path: {args.data_dir}\n",sep='\n')
-classifier.split_image_data(
-    data_dir=args.data_dir,
-    ratio=tuple(eval(args.ratio)),
-    generate_labels_txt=args.generate_labels_txt)
+def main():
+	args = parser.parse_args()
+	print("Image data splitting tool",f"data path: {args.data_dir}\n",sep='\n')
+	classifier.split_image_data(
+		data_dir=args.data_dir,
+		ratio=tuple(eval(args.ratio)),
+		generate_labels_txt=args.generate_labels_txt)
+	
+if __name__ == '__main__':
+	sys.exit(main())

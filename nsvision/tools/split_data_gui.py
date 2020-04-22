@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-
+import sys
 from tkinter import Tk, ttk, filedialog, Label, Entry, messagebox, StringVar, BooleanVar
 from threading import Thread
 from nsvision.classifier import split_image_data
@@ -167,6 +166,9 @@ class SplitDataGui(Tk):
             self.split_data_thread.start()
             self.after(50, self.check_thread)
                     
+def main():
+    split_data_gui = SplitDataGui()
+    split_data_gui.mainloop()
 
-split_data_gui = SplitDataGui()
-split_data_gui.mainloop()
+if __name__ == '__main__':
+    sys.exit(main())

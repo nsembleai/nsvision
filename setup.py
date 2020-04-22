@@ -11,6 +11,13 @@ classifiers = [
     "Topic :: Utilities",
 ]
 
+CONSOLE_SCRIPTS = [
+    'split_data = nsvision.tools.split_data:main',
+    'split_data_gui = nsvision.tools.split_data_gui:main',
+    'rename_files = nsvision.tools.rename_files:main',
+    'tumor_data_extractor = nsvision.tools.tumor_data_extractor:main',
+]
+
 setup(
     name="nsvision",
     version=__version__,
@@ -22,16 +29,13 @@ setup(
     author="Nsemble.ai",
     author_email="admin@nsemble.ai",
     license="MIT",
-    packages=["nsvision"],
+    packages=["nsvision", "nsvision.tools"],
     install_requires=[
         'numpy==1.18.3',
         'Pillow==7.0.0'
     ],
     classifiers=classifiers,
-    scripts=[
-    "bin/split_data",
-    "bin/rename_files",
-    "bin/tumor_data_extractor",
-    "bin/split_data_gui"
-    ],
+    entry_points={
+        'console_scripts': CONSOLE_SCRIPTS,
+    },
 )
