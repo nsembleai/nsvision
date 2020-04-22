@@ -5,17 +5,22 @@ nsvision is a python library and commandline tool build for simplifying image pr
 We have optimised the library for reducing the code work while working on image / video processing for data science related work.<br><br>
 nsvision library is built by [Nsemble.ai](https://nsemble.ai) team.
 
-
-
 # Installation
 ```bash
 pip install nsvision
 ```
 
-# Usage
+# Importing
+```python
+import nsvision as nv
+```
+
+# Detailed Usage
 * For python refer docs section.
 
-* For docker refer docker section
+* For tools refer tools section.
+
+* For docker refer docker section.
 
 
 # License
