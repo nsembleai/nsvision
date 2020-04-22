@@ -24,7 +24,7 @@ setup(
     license="MIT",
     packages=["nsvision"],
     install_requires=[
-        'numpy==1.18.2',
+        'numpy==1.18.3',
         'Pillow==7.0.0'
     ],
     classifiers=classifiers,
