@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
-
 import os
+import sys
 import argparse
 from nsvision import classifier
 try:
@@ -40,13 +39,6 @@ parser.add_argument(
 		default = 'jpg',
 		help='Extension of the converted image"'
 )
-
-args = parser.parse_args()
-
-print("Converting all the .mat file in the given",f"zip folder path: {args.base_dir}\n",sep='\n')
-
-
-
 
 def extract_zipfolder(zip_dir,unzip_dir):
 	"""
@@ -113,5 +105,10 @@ def convert_tumor_matdata_to_jpg(base_dir,extension):
 
 	print("Data has been saved in this directory",os.path.join(os.path.dirname(dst_dir),"brain_tumor_data"))
 
+def main():
+	args = parser.parse_args()
+	print("Converting all the .mat file in the given",f"zip folder path: {args.base_dir}\n",sep='\n')
+	convert_tumor_matdata_to_jpg(args.base_dir,args.extension)
 
-convert_tumor_matdata_to_jpg(args.base_dir,args.extension)
+if __name__ == '__main__':
+	sys.exit(main())

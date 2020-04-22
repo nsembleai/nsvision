@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-
+import sys
 import argparse
 from nsvision import classifier
 
@@ -40,10 +39,13 @@ parser.add_argument(
     help='Number from which renaming is to start'
 )
 
-args = parser.parse_args()
+def main():
+	args = parser.parse_args()
+	print("Renaming files in the folder",f"folder path: {args.folder_path}\n",sep='\n')
+	classifier.rename_files(
+		name = args.name,
+		folder_path=args.folder_path,
+		number=int(args.number))
 
-print("Renaming files in the folder",f"folder path: {args.folder_path}\n",sep='\n')
-classifier.rename_files(
-	name = args.name,
-    folder_path=args.folder_path,
-    number=int(args.number))
+if __name__ == '__main__':
+	sys.exit(main())
