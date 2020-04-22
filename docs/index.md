@@ -13,9 +13,9 @@ pip install nsvision
 ```
 
 # Usage
-* For python refer to docs section.
-* For command line refer to tools section.
-* For docker refer to docker section
+* For python refer [docs](/docs) section.
+* For command line refer [tools](/tools) section.
+* For docker refer [docker](/docker) section
 
 
 # License

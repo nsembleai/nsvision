@@ -5,6 +5,19 @@ from io import BytesIO
 from warnings import warn
 from re import sub
 from base64 import b64encode,b64decode
+
+# Specify which functions to be imported to be used with nv as nv.__functionname__()
+# Functions included in __all__ will be imported on calling "from nsvision.image_utils import *"
+# While creating a new function, don't forget to mention below incase you want to use with nv as nv.new_func()
+__all__ = [
+    "imread","imurl", "load_image_as_object", # image reading functions
+    "expand_dims","reduce_dims", # functions having numpy array operations 
+    "imshow","get_image_from_array", # functions retriving / displaying images
+    "imsave", # functions writing image  
+    "base64_to_bytes","image_to_base64", # functions performing base64 operations
+]
+
+
 try:
     import requests as request_image
 except ImportError:
@@ -31,11 +44,11 @@ interpolation_methods = {
 }
 
 
-def imread(image_path,resize=None,color_mode = None,interpolation='nearest',dtype='float32',return_original = False):
+def imread(image_path,resize=None,color_mode = None,interpolation='nearest',dtype='float32',return_original = False,normalize=False):
     """Converts a PIL Image instance to a Ndarray optimised for model.
     Parameters
     ----------
-        image_path: Image Path.
+        image_path: Image Path or bytes.
         resize: (width,height) tuple
         color_mode: default is None
             you can also use color_mode as `rgb` or `rgba` or `grayscale`
@@ -48,10 +61,14 @@ def imread(image_path,resize=None,color_mode = None,interpolation='nearest',dtyp
             "hamming" are also supported.
             Default: "nearest".
         dtype: Dtype to use for the returned array.
+            Default: float32
 
         return_original: Returns original image array along with resized image array.
-        	Default: False
-        	Note: This parameter only works with resize parameter
+            Default: False
+            Note: This parameter only works with resize parameter
+
+        normalize: Returns normalized image if set to True
+            Default: False
     # Returns
         A 3D Numpy array.
     # Raises
@@ -87,6 +104,9 @@ def imread(image_path,resize=None,color_mode = None,interpolation='nearest',dtyp
             image = image.resize(resize, resample)
     
     image_array = toarray(image,dtype=dtype)
+
+    if normalize:
+        image_array /= 255.
     
     if return_original:
         if resize is None:
@@ -94,6 +114,58 @@ def imread(image_path,resize=None,color_mode = None,interpolation='nearest',dtyp
         return original_image_array , image_array
     
     return image_array
+
+
+def load_image_as_object(image_path,color_mode=None,interpolation='nearest',resize=None):
+    """Loads image as PIL object
+    image_path: path or bytes like object
+    Parameters
+    ----------
+        image_path: Image Path or bytes.
+        resize: (width,height) tuple
+        color_mode: default is None
+            you can also use color_mode as `rgb` or `rgba` or `grayscale`
+        interpolation:
+            Interpolation method used to resample the image if the
+            target size is different from that of the loaded image.
+            Supported methods are "nearest", "bilinear", and "bicubic".
+            If PIL version 1.1.3 or newer is installed, "lanczos" is also
+            supported. If PIL version 3.4.0 or newer is installed, "box" and
+            "hamming" are also supported.
+            Default: "nearest".
+
+    # Returns
+        A pil image object
+    # Raises
+        ValueError: if invalid `image_path` or `resize` or `color_mode` or `interpolation` is passed.    
+    """
+    image = pilimage.open(image_path)
+    if color_mode is not None:
+        if color_mode == 'grayscale':
+            if image.mode not in ('L', 'I;16', 'I'):
+                image = image.convert('L')
+        elif color_mode == 'rgba':
+            if image.mode != 'RGBA':
+                image = image.convert('RGBA')
+        elif color_mode == 'rgb':
+            if image.mode != 'RGB':
+                image = image.convert('RGB')
+        else:
+            raise ValueError('color_mode must be "grayscale", "rgb", or "rgba"')
+        
+    if resize is not None:
+        if not isinstance(resize,tuple):
+            raise TypeError(f'resize must be tuple of (width,height) but got {resize} of type {type(resize)} instead')
+
+        if len(resize) != 2:
+            raise ValueError(f'Tuple with (width,height) required but got {resize} instead.')
+
+        if image.size != resize:
+            if interpolation not in interpolation_methods:
+                raise ValueError(f'Invalid interpolation, currently supported interpolations:{interpolation_methods.keys()}')
+            resample = interpolation_methods.get(interpolation)
+            image = image.resize(resize, resample)
+    return image
 
 
 def imurl(image_url, return_as_array = False , **kwargs):
@@ -105,7 +177,7 @@ def imurl(image_url, return_as_array = False , **kwargs):
     image_url: http / https url of image
     
     return_as_array: Convert image directly to numpy array
-    	default: False
+        default: False
     
     kwargs:
         Keyword arguments of imread can be passed for image modification:
@@ -115,6 +187,7 @@ def imurl(image_url, return_as_array = False , **kwargs):
         Note: kwargs only works with return_as_array = True
         
     Returns:
+    --------
         PIL Image by default:
         if return_as_array is True:
             image will be returned as numpy array.
@@ -122,6 +195,7 @@ def imurl(image_url, return_as_array = False , **kwargs):
         Additional params like resize, color_mode, dtype , return_original can also be passed inorder to refine the image
 
     Raises:
+    -------
         ImportError if requests library is not installed    
     """
     if request_image is None:
@@ -293,13 +367,12 @@ def base64_to_bytes(base64_encoded_image):
     return BytesIO(b64decode(image_data))
 
 
-def image_to_base64(image_from_array,file_format='PNG'):
+def image_to_base64(image,file_format='PNG'):
     """
     Convert image from array to base64 string
     Parameters
     ----------
-    image_from_array: PIL image instance 
-    	Incase image is numpy array, convert to image object using nv.get_image_from_array(array)
+    image: path or pil image object
 
     file_format: file format of image
     
@@ -307,6 +380,9 @@ def image_to_base64(image_from_array,file_format='PNG'):
     -------
     base64 encoded image as string
     """
+    if isinstance(image,str):
+        image = load_image_as_object(image)
+
     buffered = BytesIO()
-    image_from_array.save(buffered, format=file_format)
+    image.save(buffered, format=file_format)
     return u"data:image/png;base64," + b64encode(buffered.getvalue()).decode("ascii")

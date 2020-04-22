@@ -31,7 +31,8 @@ interpolation:
     "hamming" are also supported.
     Default: "nearest".
 dtype: Dtype to use for the returned array.
-
+normalize: Returns normalized image array if set to True
+    Default: False
 return_original: Returns original image array along with resized image array.
     Default: False
     Note: This parameter only works with resize parameter
@@ -44,6 +45,39 @@ Raises:
 ```
 ValueError: if invalid `image_path` or `resize` or `color_mode` or `interpolation` or `dtype` is passed.
 ValueError: if return_original is True and resize is None
+```
+<br>
+
+## load_image_as_object
+Read image as pil image object
+```python
+pil_image_object = nv.load_image_as_object("image.jpg")
+
+pil_image_object.crop((x,y,w,h)) #random example of usage 
+```
+Parameters:
+```
+image_path: Image Path or bytes.
+resize: (width,height) tuple
+color_mode: default is None
+    you can also use color_mode as `rgb` or `rgba` or `grayscale`
+interpolation:
+    Interpolation method used to resample the image if the
+    target size is different from that of the loaded image.
+    Supported methods are "nearest", "bilinear", and "bicubic".
+    If PIL version 1.1.3 or newer is installed, "lanczos" is also
+    supported. If PIL version 3.4.0 or newer is installed, "box" and
+    "hamming" are also supported.
+    Default: "nearest".
+
+```
+Returns:
+```
+A PIL image instance
+```
+Raises:
+```
+ValueError: if invalid `image_path` or `resize` or `color_mode` or `interpolation` is passed.
 ```
 <br>
 
@@ -224,7 +258,7 @@ base64_encoded_image = nv.image_to_base64(pil_image,file_format='PNG')
 ```
 Parameters:
 ```
-image_from_array: PIL image instance 
+image: image path or PIL image instance 
     Incase image is numpy array, convert to image object using nv.get_image_from_array(array)
 
 file_format: file format of image
