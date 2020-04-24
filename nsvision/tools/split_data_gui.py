@@ -2,7 +2,7 @@ import sys
 from tkinter import Tk, ttk, filedialog, Label, Entry, messagebox, StringVar, BooleanVar
 from threading import Thread
 from nsvision.classifier import split_image_data
-
+from pathlib import Path
 
 class SplitDataGui(Tk):
     def __init__(self):
@@ -81,7 +81,7 @@ class SplitDataGui(Tk):
                 
 
     def source_browse(self):
-        self.source_browse_path = filedialog.askdirectory()    
+        self.source_browse_path = Path(filedialog.askdirectory()) #using Path() to get absolute path for linux as well as windows    
         self.source_path_label.config(text = self.source_browse_path)
 
 
@@ -122,7 +122,6 @@ class SplitDataGui(Tk):
     def reset(self):
         self.source_browse_path = None
         self.process_status.set(False)
-        self.error_message = None
         self.source_path_label.config(text = '')
         self.progress_bar.config(value = 0)
         self.reset_string_var()
