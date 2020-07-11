@@ -102,12 +102,10 @@ def split_image_data(data_dir,ratio,generate_labels_txt=False):
 			split_lst = [train_list,val_list,test_list,qa_list]
 			for i,j in zip(folder_names,split_lst):
 				for img in j:
-					img_path = os.path.join(class_path,img)
-					if os.path.isfile(img_path):
-						# src_path = os.path.join(class_path,img)
-						dst_path = os.path.join(os.path.join(model_data_dir,i),class_name)
-						os.makedirs(dst_path,exist_ok=True)
-						copy2(img_path,dst_path)
+					src_path = os.path.join(class_path,img)
+					dst_path = os.path.join(os.path.join(model_data_dir,i),class_name)
+					os.makedirs(dst_path,exist_ok=True)
+					copy2(src_path,dst_path)
 		if generate_labels_txt:
 			print("Generating labels.txt")
 			with open(os.path.join(os.path.dirname(data_dir),'labels.txt'),'w') as labels_file:
@@ -148,7 +146,7 @@ def rename_files(name,folder_path,number):
 	print("Renaming completed",f"Renamed files are stored at {dst_path}",sep='\n')
 
 
-def get_image_from_mat(mat_filepath):
+def get_image_from_mat(mat_filepath, data = False):
 	"""
 	This function convert .mat file to pil image
 	Arguments  -
@@ -163,8 +161,10 @@ def get_image_from_mat(mat_filepath):
 
 
 	mat_file =  h5py_file(mat_filepath,'r')
-	cjdata = mat_file['cjdata']
-	image_array = nparray(cjdata.get('image')).astype("float64")
+	image_array = nparray(cjdata.get('image')).astype(np.float64)
 	nv_image = get_image_from_array(image_array)
-	label = cjdata.get('label')[0][0]
-	return nv_image, label
+	if data:
+		cjdata = mat_file['cjdata']
+		return nv_image, cjdata
+	else:
+		return nv_image
