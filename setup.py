@@ -29,7 +29,7 @@ setup(
     author="Nsemble.ai",
     author_email="admin@nsemble.ai",
     license="MIT",
-    packages=["nsvision", "nsvision.tools"],
+    packages=["nsvision", "nsvision.tools","nsvision.xml"],
     install_requires=[
         'numpy==1.18.3',
         'Pillow==7.0.0'
