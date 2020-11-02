@@ -194,15 +194,14 @@ class XMLConversion:
             print("Error! Could not write json")
         
             
-def voc_xml_to_txt(self):
-        
-        try:
-            ann_path_list = glob.glob(os.path.join(self.xml_dir,"*.xml"))
-        except:
-            print(f"Cannot create list of xml files. Check {self.xml_dir}")
-        if ann_path_list == []:
-            print('No XML files Found')
-        
+	def voc_xml_to_txt(self):
+		try:
+			ann_path_list = glob.glob(os.path.join(self.xml_dir,"*.xml"))
+		except:
+			print(f"Cannot create list of xml files. Check {self.xml_dir}")
+	    if ann_path_list == []:
+	    	print('No XML files Found')
+	        
         label2id = self.get_label2id(ann_path_list)
         result = []
         for i,ann in enumerate(sorted(ann_path_list)):
