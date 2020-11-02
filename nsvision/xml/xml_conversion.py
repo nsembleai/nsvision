@@ -9,7 +9,7 @@ class XMLConversion:
         self.xml_dir = xml_dir
         self.out_dir = out_dir
         
-    def xml_to_csv(self):
+    def voc_xml_to_csv(self):
         xml_list = []
         for xml_file in glob.glob(self.xml_dir + '/*.xml'):
             tree = ET.parse(xml_file)
@@ -194,7 +194,7 @@ class XMLConversion:
             print("Error! Could not write json")
         
             
-    def voc_xml_to_txt(self):
+def voc_xml_to_txt(self):
         
         try:
             ann_path_list = glob.glob(os.path.join(self.xml_dir,"*.xml"))
@@ -214,11 +214,12 @@ class XMLConversion:
             for xml_obj_data in xml_data['object']:
                 x, y, abs_width, abs_height = self.get_object_params(xml_obj_data,width,height)
                 result.append("%d %.6f %.6f %.6f %.6f" % (label2id[xml_obj_data['name']], x, y, abs_width, abs_height))
-                try:
-                    if self.out_dir == None:
-                        self.out_dir = os.path.dirname(os.path.abspath("__file__"))
-                    with open(os.path.join(self.out_dir, "%s.txt" % os.path.splitext(xml_data['filename'])[0]), "w+") as f:
-                        f.write("\n".join(result))
-                    print(f"txt created successfully {self.out_dir}")
-                except:
-                    print("Error! Could not write txt")
+            try:
+                if self.out_dir == None:
+                    self.out_dir = os.path.dirname(os.path.abspath("__file__"))
+                with open(os.path.join(self.out_dir, "%s.txt" % os.path.splitext(xml_data['filename'])[0]), "w+") as f:
+                    f.write("\n".join(result))
+                print(f"txt created successfully {self.out_dir}")
+                result = []
+            except:
+                print("Error! Could not write txt")
