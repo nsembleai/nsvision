@@ -5,6 +5,7 @@ import json
 import xml.etree.ElementTree as ET
 
 class XMLConversion:
+	"""This class converts xml files into csv,json,txt"""
     def __init__(self,xml_dir, out_dir = None):
         self.xml_dir = xml_dir
         self.out_dir = out_dir
