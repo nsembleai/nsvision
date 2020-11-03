@@ -5,12 +5,13 @@ import json
 import xml.etree.ElementTree as ET
 
 class XMLConversion:
-	"""This class converts xml files into csv,json,txt"""
     def __init__(self,xml_dir, out_dir = None):
         self.xml_dir = xml_dir
         self.out_dir = out_dir
         
     def voc_xml_to_csv(self):
+        """This function takes xml dir as input and 
+        converts all voc xml into csv format"""
         xml_list = []
         for xml_file in glob.glob(self.xml_dir + '/*.xml'):
             tree = ET.parse(xml_file)
@@ -42,6 +43,8 @@ class XMLConversion:
             print("Error! Could not write csv")
         
     def parse_voc_annotation(self,xml, labels=[]):
+        """This function parse xml and 
+        return a dictionary containing all data about xml"""
         xml_data = {'object':[]}
         try:
             tree = ET.parse(xml)
@@ -80,6 +83,8 @@ class XMLConversion:
         return xml_data
 
     def get_coco_annotation_from_obj(self,xml_obj_data, label2id):
+        """This function takes dictionary containing name, bndbox info xml 
+        and return dictionary of coco format"""
         label = xml_obj_data['name']
         assert label in label2id, f"Error: {label} is not in label2id !"
         category_id = label2id[label]
@@ -101,7 +106,8 @@ class XMLConversion:
         return ann
     
     def get_label2id(self,ann_path_list):
-        
+        """This function takes list of xml files as input and 
+        return the dictionary of class name and its id"""
         seen_labels = {}
         
         for ann in ann_path_list:
@@ -116,7 +122,9 @@ class XMLConversion:
     
 
     def get_object_params(self,xml_obj_data,width,height):
-        
+        """This function takes dictionar of xml oject data with image height and width 
+    	and return object parameters for coco format"""
+
         xmin = xml_obj_data['xmin']
         xmax = xml_obj_data['xmax']
         ymin = xml_obj_data['ymin']
@@ -141,7 +149,7 @@ class XMLConversion:
 
 
     def voc_xml_to_coco_json(self):
-
+        """This function converts voc xml files into coco json format"""
         ann_path_list = glob.glob(os.path.join(self.xml_dir,"*.xml"))
         if ann_path_list == []:
             print('No XML files Found')
@@ -195,14 +203,15 @@ class XMLConversion:
             print("Error! Could not write json")
         
             
-	def voc_xml_to_txt(self):
-		try:
-			ann_path_list = glob.glob(os.path.join(self.xml_dir,"*.xml"))
-		except:
-			print(f"Cannot create list of xml files. Check {self.xml_dir}")
-	    if ann_path_list == []:
-	    	print('No XML files Found')
-	        
+    def voc_xml_to_txt(self):
+        """This function converts vox xml files into txt format"""
+        try:
+            ann_path_list = glob.glob(os.path.join(self.xml_dir,"*.xml"))
+        except:
+            print(f"Cannot create list of xml files. Check {self.xml_dir}")
+        if ann_path_list == []:
+            print('No XML files Found')
+
         label2id = self.get_label2id(ann_path_list)
         result = []
         for i,ann in enumerate(sorted(ann_path_list)):
@@ -210,7 +219,7 @@ class XMLConversion:
             
             width = xml_data['width']
             height = xml_data['height']
-            
+
             for xml_obj_data in xml_data['object']:
                 x, y, abs_width, abs_height = self.get_object_params(xml_obj_data,width,height)
                 result.append("%d %.6f %.6f %.6f %.6f" % (label2id[xml_obj_data['name']], x, y, abs_width, abs_height))
