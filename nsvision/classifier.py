@@ -1,4 +1,5 @@
-import os 
+import os
+import json
 from shutil import copy2
 from random import sample
 from numpy import array as nparray
@@ -38,13 +39,14 @@ def image_frequency(num,ratio):
 	return round( num * ratio, 0 )
 
 
-def split_image_data(data_dir,ratio,generate_labels_txt=False):
+def split_image_data(data_dir,ratio,data_path = True,generate_labels_txt=False):
 	"""
 	Divides image data required for classification according to Train, Test, Validation and QA
 
 	Parameters:
 	data_dir:  path to image data folder
 	ratio: Tuple ratio
+	data_path: set True if you want to store the data path
 	generate_labels_txt: set to True if you want to generate labels.txt for the classes.
 		Default(False)
 	"""
@@ -100,20 +102,27 @@ def split_image_data(data_dir,ratio,generate_labels_txt=False):
 			test_list = class_images_new[int(div2):int(div3)]
 			qa_list = class_images_new[int(div3):]
 			split_lst = [train_list,val_list,test_list,qa_list]
-			for i,j in zip(folder_names,split_lst):
-				for img in j:
+			data_dict = {}
+			for foldr,lst in zip(folder_names,split_lst):
+				data_dict[foldr] = []
+				for img in lst:
 					src_path = os.path.join(class_path,img)
-					dst_path = os.path.join(os.path.join(model_data_dir,i),class_name)
+					dst_path = os.path.join(os.path.join(model_data_dir,foldr),class_name)
 					os.makedirs(dst_path,exist_ok=True)
+					data_dict[foldr].append(src_path)
 					copy2(src_path,dst_path)
+		if data_path:
+			print("Saving data path")
+			with open(os.path.join(model_data_dir,"data_path_history.json"), "w") as outfile:
+				json.dump(data_dict, outfile) 
 		if generate_labels_txt:
 			print("Generating labels.txt")
-			with open(os.path.join(os.path.dirname(data_dir),'labels.txt'),'w') as labels_file:
+			with open(os.path.join(model_data_dir,'labels.txt'),'w') as labels_file:
 				labels_file.write("\n".join(classes_list))
 	except:
 		raise Exception("Failed to split data please check folder structure or check your OS Permission")
 	print("Splitting completed",f"Splitted data is stored at {model_data_dir}",sep='\n')
-
+	
 
 def rename_files(name,folder_path,number):
 	"""
