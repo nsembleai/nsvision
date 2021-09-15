@@ -1,6 +1,6 @@
 The MIT License
 
-Copyright (c) 2019-2020 N-semble.ai https://nsemble.ai
+Copyright (c) 2019-2021 N-semble.ai https://nsemble.ai
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

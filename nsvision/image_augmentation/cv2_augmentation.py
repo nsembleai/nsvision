@@ -1,12 +1,6 @@
 import cv2
-from skimage.exposure import rescale_intensity
-from skimage.segmentation import slic
-from skimage.util import img_as_float
-from skimage import io
 import numpy as np
 import os
-import argparse
-import os.path
 
 
 class ImageAugmentation():
