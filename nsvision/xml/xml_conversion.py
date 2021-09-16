@@ -105,7 +105,7 @@ class XMLConversion:
         }
         return ann
     
-    def get_label2id(self,ann_path_list):
+    def get_label2id(self, ann_path_list):
         """This function takes list of xml files as input and 
         return the dictionary of class name and its id"""
         seen_labels = {}
@@ -116,7 +116,7 @@ class XMLConversion:
                 if dct['name'] in seen_labels:
                     seen_labels[dct['name']] += 1
                 else:
-                    seen_labels[dct['name']] = 1
+                    seen_labels[dct['name']] = 0
         label2id = {k:v+1 for (v,k) in enumerate(list(seen_labels.keys()))}
         return label2id
     
@@ -214,7 +214,7 @@ class XMLConversion:
 
         label2id = self.get_label2id(ann_path_list)
         result = []
-        for i,ann in enumerate(sorted(ann_path_list)):
+        for ann in sorted(ann_path_list):
             xml_data = self.parse_voc_annotation(ann)
             
             width = xml_data['width']
