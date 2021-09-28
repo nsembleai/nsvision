@@ -36,7 +36,7 @@ setup(
           'video': ['opencv-python'],
     },
     classifiers=[
-          'Development Status :: 5 - Production/Stable',
+          'Development Status :: 2 - Pre-Alpha',
           'Intended Audience :: Developers',
           'Intended Audience :: Education',
           'Intended Audience :: Science/Research',
