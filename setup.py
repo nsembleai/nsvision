@@ -1,15 +1,7 @@
-from setuptools import setup
+from setuptools import find_packages, setup
 from nsvision import __version__
 with open("README.md", "r") as fh:
     long_description = fh.read()
-
-classifiers = [
-    "Topic :: Scientific/Engineering :: Artificial Intelligence",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
-    "License :: OSI Approved :: MIT License",
-    "Topic :: Utilities",
-]
 
 CONSOLE_SCRIPTS = [
     'split_data = nsvision.tools.split_data:main',
@@ -22,19 +14,38 @@ setup(
     name="nsvision",
     version=__version__,
     python_requires=">=3.6",
-    description="nsvision - Computer Vision Wrapper built on top of PIL, cv2 and Numpy",
+    description="nsvision - Image data processing library",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/Nsemble/nsvision",
+    url="https://github.com/nsembleai/nsvision",
     author="Nsemble.ai",
     author_email="admin@nsemble.ai",
     license="MIT",
-    packages=["nsvision", "nsvision.tools","nsvision.xml","nsvision.s3bucket","nsvision.image_augmentation",],
+    packages=find_packages(),
     install_requires=[
         'numpy',
-        'Pillow'
+        'pillow'
     ],
-    classifiers=classifiers,
+    extras_require={
+          'tests': ['natsort',
+                    'Pillow',
+                    'pytest',
+                    'pytest-xdist', # for parallel testing
+                    'pytest-cov'], # for testing coverage
+          'pep8': ['flake8'],
+          'video': ['opencv-python'],
+    },
+    classifiers=[
+          'Development Status :: 5 - Production/Stable',
+          'Intended Audience :: Developers',
+          'Intended Audience :: Education',
+          'Intended Audience :: Science/Research',
+          'License :: OSI Approved :: MIT License',
+          'Programming Language :: Python :: 3',
+          'Programming Language :: Python :: 3.6',
+          'Topic :: Software Development :: Libraries',
+          'Topic :: Software Development :: Libraries :: Python Modules'
+      ],
     entry_points={
         'console_scripts': CONSOLE_SCRIPTS,
     },

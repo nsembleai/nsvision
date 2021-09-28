@@ -1,3 +1,5 @@
-from ._version import version as __version__
+# Do not check for unused imports
+# flake8: noqa:F401
 from .image_utils import *
-from .video_utils import live_video
+
+__version__ = "0.1.9"
