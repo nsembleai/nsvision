@@ -1,10 +1,8 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 from io import BytesIO
 from warnings import warn
 from re import sub
 from base64 import b64encode, b64decode
+from pathlib import Path
 
 # Specify which functions to be imported to be used with nv as nv.__functionname__()
 # Functions included in __all__ will be imported on calling "from nsvision.image_utils import *"
@@ -41,7 +39,7 @@ except ImportError:
     )
 
 
-interpolation_methods = {
+__interpolation_methods__ = {
     "nearest": pilimage.NEAREST,
     "bilinear": pilimage.BILINEAR,
     "bicubic": pilimage.BICUBIC,
@@ -59,6 +57,7 @@ def imread(
     dtype="float32",
     return_original=False,
     normalize=False,
+    maintain_aspect_ratio=False
 ):
     """Converts a PIL Image instance to a Ndarray optimised for model.
     Parameters
@@ -70,10 +69,8 @@ def imread(
         interpolation:
             Interpolation method used to resample the image if the
             target size is different from that of the loaded image.
-            Supported methods are "nearest", "bilinear", and "bicubic".
-            If PIL version 1.1.3 or newer is installed, "lanczos" is also
-            supported. If PIL version 3.4.0 or newer is installed, "box" and
-            "hamming" are also supported.
+            Supported methods are "nearest", "bilinear", "bicubic".
+            "hamming", "box" and "lanczos".
             Default: "nearest".
         dtype: Dtype to use for the returned array.
             Default: float32
@@ -84,13 +81,26 @@ def imread(
 
         normalize: Returns normalized image if set to True
             Default: False
+
+        maintain_aspect_ratio: Boolean, whether to resize images to a target
+                size without aspect ratio distortion. The image is cropped in
+                the center with target aspect ratio before resizing.
     # Returns
         A 3D Numpy array.
     # Raises
         ValueError: if invalid `image_path` or `resize` or `color_mode` or `interpolation` or `dtype` is passed.
         ValueError: if return_original is True and resize is None
     """
-    image = pilimage.open(image_path)
+    if isinstance(image_path, BytesIO):
+        image = pilimage.open(image_path)
+    elif isinstance(image_path, (Path, bytes, str)):
+        if isinstance(image_path, Path):
+            image_path = str(image_path.resolve())
+        with open(image_path, 'rb') as f:
+            image = pilimage.open(BytesIO(f.read()))
+    else:
+        raise TypeError('path should be path-like or io.BytesIO'
+                        ', not {}'.format(type(image_path)))
     if color_mode is not None:
         if color_mode == "grayscale":
             if image.mode not in ("L", "I;16", "I"):
@@ -104,25 +114,61 @@ def imread(
         else:
             raise ValueError('color_mode must be "grayscale", "rgb", or "rgba"')
 
+    # if resize is not None:
+    #     if not isinstance(resize, tuple):
+    #         raise TypeError(
+    #             f"resize must be tuple of (width, height) but got {resize} of type {type(resize)} instead"
+    #         )
+
+    #     if len(resize) != 2:
+    #         raise ValueError(
+    #             f"Tuple with (width,height) required but got {resize} instead."
+    #         )
+
+    #     original_image_array = toarray(image, dtype=dtype)
+    #     if image.size != resize:
+    #         if interpolation not in interpolation_methods:
+    #             raise ValueError(
+    #                 f"Invalid interpolation, currently supported interpolations:{interpolation_methods.keys()}"
+    #             )
+    #         resample = interpolation_methods.get(interpolation)
+    #         image = image.resize(resize, resample)
+
     if resize is not None:
-        if not isinstance(resize, tuple):
-            raise TypeError(
-                f"resize must be tuple of (width, height) but got {resize} of type {type(resize)} instead"
-            )
-
-        if len(resize) != 2:
-            raise ValueError(
-                f"Tuple with (width,height) required but got {resize} instead."
-            )
-
-        original_image_array = toarray(image, dtype=dtype)
-        if image.size != resize:
-            if interpolation not in interpolation_methods:
+        width_height_tuple = (resize[1], resize[0])
+        if image.size != width_height_tuple:
+            original_image_array = toarray(image, dtype=dtype)
+            if interpolation not in __interpolation_methods__:
                 raise ValueError(
-                    f"Invalid interpolation, currently supported interpolations:{interpolation_methods.keys()}"
-                )
-            resample = interpolation_methods.get(interpolation)
-            image = image.resize(resize, resample)
+                    'Invalid interpolation method {} specified. Supported '
+                    'methods are {}'.format(
+                        interpolation,
+                        ", ".join(__interpolation_methods__.keys())))
+            resample = __interpolation_methods__[interpolation]
+
+            if maintain_aspect_ratio:
+                width, height = image.size
+                target_width, target_height = width_height_tuple
+
+                crop_height = (width * target_height) // target_width
+                crop_width = (height * target_width) // target_height
+
+                # Set back to input height / width
+                # if crop_height / crop_width is not smaller.
+                crop_height = min(height, crop_height)
+                crop_width = min(width, crop_width)
+
+                crop_box_hstart = (height - crop_height) // 2
+                crop_box_wstart = (width - crop_width) // 2
+                crop_box_wend = crop_box_wstart + crop_width
+                crop_box_hend = crop_box_hstart + crop_height
+                crop_box = [
+                    crop_box_wstart, crop_box_hstart, crop_box_wend,
+                    crop_box_hend
+                ]
+                image = image.resize(width_height_tuple, resample, box=crop_box)
+            else:
+                image = image.resize(width_height_tuple, resample)
 
     image_array = toarray(image, dtype=dtype)
 
