@@ -1,7 +1,13 @@
 from setuptools import find_packages, setup
-from nsvision import __version__
+
 with open("README.md", "r") as fh:
     long_description = fh.read()
+
+with open('nsvision/__init__.py', encoding='utf-8') as fid:
+    for line in fid:
+        if line.startswith('__version__'):
+            __version__ = line.strip().split()[-1][1:-1]
+            break
 
 CONSOLE_SCRIPTS = [
     'split_data = nsvision.tools.split_data:main',
