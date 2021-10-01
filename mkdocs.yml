@@ -1,7 +1,6 @@
 site_name: nsvision
 nav:
   - Home: index.md
-  - Docs: docs.md
   - Tools: tools.md
   - Docker: docker.md
   - License: LICENSE.md

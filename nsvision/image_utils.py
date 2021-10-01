@@ -10,7 +10,6 @@ from pathlib import Path
 __all__ = [
     "imread",
     "imurl",
-    "load_image_as_object",  # image reading functions
     "expand_dims",
     "reduce_dims",  # functions having numpy array operations
     "imshow",
@@ -114,26 +113,6 @@ def imread(
         else:
             raise ValueError('color_mode must be "grayscale", "rgb", or "rgba"')
 
-    # if resize is not None:
-    #     if not isinstance(resize, tuple):
-    #         raise TypeError(
-    #             f"resize must be tuple of (width, height) but got {resize} of type {type(resize)} instead"
-    #         )
-
-    #     if len(resize) != 2:
-    #         raise ValueError(
-    #             f"Tuple with (width,height) required but got {resize} instead."
-    #         )
-
-    #     original_image_array = toarray(image, dtype=dtype)
-    #     if image.size != resize:
-    #         if interpolation not in interpolation_methods:
-    #             raise ValueError(
-    #                 f"Invalid interpolation, currently supported interpolations:{interpolation_methods.keys()}"
-    #             )
-    #         resample = interpolation_methods.get(interpolation)
-    #         image = image.resize(resize, resample)
-
     if resize is not None:
         width_height_tuple = (resize[1], resize[0])
         if image.size != width_height_tuple:
@@ -183,66 +162,6 @@ def imread(
         return original_image_array, image_array
 
     return image_array
-
-
-def load_image_as_object(
-    image_path, color_mode=None, interpolation="nearest", resize=None
-):
-    """Loads image as PIL object
-    image_path: path or bytes like object
-    Parameters
-    ----------
-        image_path: Image Path or bytes.
-        resize: (width,height) tuple
-        color_mode: default is None
-            you can also use color_mode as `rgb` or `rgba` or `grayscale`
-        interpolation:
-            Interpolation method used to resample the image if the
-            target size is different from that of the loaded image.
-            Supported methods are "nearest", "bilinear", and "bicubic".
-            If PIL version 1.1.3 or newer is installed, "lanczos" is also
-            supported. If PIL version 3.4.0 or newer is installed, "box" and
-            "hamming" are also supported.
-            Default: "nearest".
-
-    # Returns
-        A pil image object
-    # Raises
-        ValueError: if invalid `image_path` or `resize` or `color_mode` or `interpolation` is passed.
-    """
-    image = pilimage.open(image_path)
-    if color_mode is not None:
-        if color_mode == "grayscale":
-            if image.mode not in ("L", "I;16", "I"):
-                image = image.convert("L")
-        elif color_mode == "rgba":
-            if image.mode != "RGBA":
-                image = image.convert("RGBA")
-        elif color_mode == "rgb":
-            if image.mode != "RGB":
-                image = image.convert("RGB")
-        else:
-            raise ValueError('color_mode must be "grayscale", "rgb", or "rgba"')
-
-    if resize is not None:
-        if not isinstance(resize, tuple):
-            raise TypeError(
-                f"resize must be tuple of (width,height) but got {resize} of type {type(resize)} instead"
-            )
-
-        if len(resize) != 2:
-            raise ValueError(
-                f"Tuple with (width,height) required but got {resize} instead."
-            )
-
-        if image.size != resize:
-            if interpolation not in interpolation_methods:
-                raise ValueError(
-                    f"Invalid interpolation, currently supported interpolations:{interpolation_methods.keys()}"
-                )
-            resample = interpolation_methods.get(interpolation)
-            image = image.resize(resize, resample)
-    return image
 
 
 def imurl(image_url, return_as_array=False, **kwargs):
@@ -472,8 +391,7 @@ def image_to_base64(image, file_format="PNG"):
     base64 encoded image as string
     """
     if isinstance(image, str):
-        image = load_image_as_object(image)
-
+        image = get_image_from_array(imread(image))        
     buffered = BytesIO()
     image.save(buffered, format=file_format)
     return "data:image/png;base64," + b64encode(buffered.getvalue()).decode("ascii")
