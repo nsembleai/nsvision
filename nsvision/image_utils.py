@@ -56,7 +56,7 @@ def imread(
     dtype="float32",
     return_original=False,
     normalize=False,
-    maintain_aspect_ratio=False
+    maintain_aspect_ratio=False,
 ):
     """Converts a PIL Image instance to a Ndarray optimised for model.
     Parameters
@@ -95,11 +95,12 @@ def imread(
     elif isinstance(image_path, (Path, bytes, str)):
         if isinstance(image_path, Path):
             image_path = str(image_path.resolve())
-        with open(image_path, 'rb') as f:
+        with open(image_path, "rb") as f:
             image = pilimage.open(BytesIO(f.read()))
     else:
-        raise TypeError('path should be path-like or io.BytesIO'
-                        ', not {}'.format(type(image_path)))
+        raise TypeError(
+            "path should be path-like or io.BytesIO" ", not {}".format(type(image_path))
+        )
     if color_mode is not None:
         if color_mode == "grayscale":
             if image.mode not in ("L", "I;16", "I"):
@@ -119,10 +120,11 @@ def imread(
             original_image_array = toarray(image, dtype=dtype)
             if interpolation not in __interpolation_methods__:
                 raise ValueError(
-                    'Invalid interpolation method {} specified. Supported '
-                    'methods are {}'.format(
-                        interpolation,
-                        ", ".join(__interpolation_methods__.keys())))
+                    "Invalid interpolation method {} specified. Supported "
+                    "methods are {}".format(
+                        interpolation, ", ".join(__interpolation_methods__.keys())
+                    )
+                )
             resample = __interpolation_methods__[interpolation]
 
             if maintain_aspect_ratio:
@@ -142,8 +144,10 @@ def imread(
                 crop_box_wend = crop_box_wstart + crop_width
                 crop_box_hend = crop_box_hstart + crop_height
                 crop_box = [
-                    crop_box_wstart, crop_box_hstart, crop_box_wend,
-                    crop_box_hend
+                    crop_box_wstart,
+                    crop_box_hstart,
+                    crop_box_wend,
+                    crop_box_hend,
                 ]
                 image = image.resize(width_height_tuple, resample, box=crop_box)
             else:
@@ -391,7 +395,7 @@ def image_to_base64(image, file_format="PNG"):
     base64 encoded image as string
     """
     if isinstance(image, str):
-        image = get_image_from_array(imread(image))        
+        image = get_image_from_array(imread(image))
     buffered = BytesIO()
     image.save(buffered, format=file_format)
     return "data:image/png;base64," + b64encode(buffered.getvalue()).decode("ascii")

@@ -200,8 +200,7 @@ def test_imread(tmpdir):
 
 
 def test_imurl():
-    url = f"https://nsemble.ai/assets/images/logo.png"
-    image_from_url = image_utils.imurl(url)
+    image_from_url = image_utils.imurl("https://nsemble.ai/assets/images/logo.png")
     import PIL
 
     assert isinstance(image_from_url, PIL.Image.Image)

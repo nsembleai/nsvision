@@ -5,6 +5,7 @@ from random import sample
 
 try:
     from natsort import natsorted
+
     # from h5py import File as h5py_file
 except ImportError:
     natsorted = None
@@ -114,9 +115,9 @@ def split_image_data(data_dir, ratio, data_path=True, generate_labels_txt=False)
                 sep="\n",
             )
             train_list = class_images_new[: int(div1)]
-            val_list = class_images_new[int(div1): int(div2)]
-            test_list = class_images_new[int(div2): int(div3)]
-            qa_list = class_images_new[int(div3):]
+            val_list = class_images_new[int(div1) : int(div2)]
+            test_list = class_images_new[int(div2) : int(div3)]
+            qa_list = class_images_new[int(div3) :]
             split_lst = [train_list, val_list, test_list, qa_list]
             data_dict = {}
             for foldr, lst in zip(folder_names, split_lst):

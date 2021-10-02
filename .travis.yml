@@ -1,0 +1,45 @@
+sudo: required
+language: python
+matrix:
+    include:
+        # Ensure PEP8 code formatting
+        - python: 3.8
+          env: TEST_MODE=PEP8
+        # Running testcases
+        - python: 3.8
+          env: TEST_MODE=TESTS
+        # Testing imports and versioning
+        - python: 3.8
+          env: TEST_MODE=IMPORTS
+
+
+before_install:
+  - sudo apt-get update
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  # Useful for debugging any issues with conda
+  - conda info -a
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
+  - source activate test-environment
+
+install:
+  - if [[ "$TEST_MODE" == "PEP8" ]]; then
+      pip install -e .[pep8];
+    elif [[ "$TEST_MODE" == "TESTS" ]]; then
+      pip install -e .[tests];
+    elif [[ "$TEST_MODE" == "IMPORTS" ]]; then
+      pip install .;
+    fi
+
+script:
+  - if [[ "$TEST_MODE" == "PEP8" ]]; then
+      flake8 -v --count;
+    elif [[ "$TEST_MODE" == "TESTS" ]]; then
+      py.test tests --cov-config .coveragerc --cov=nsvision tests;
+    elif [[ "$TEST_MODE" == "IMPORTS" ]]; then
+      python -c "import nsvision as nv;print(nv.__version__)";
+    fi
