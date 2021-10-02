@@ -32,11 +32,12 @@ setup(
     extras_require={
         "tests": [
             "natsort",
-            "Pillow",
+            "pillow",
             "pytest",
             "pytest-xdist",  # for parallel testing
-            "pytest-cov",
-        ],  # for testing coverage
+            "pytest-cov",  # for testing coverage
+            "requests",
+        ],
         "pep8": ["flake8"],
         "video": ["opencv-python"],
     },

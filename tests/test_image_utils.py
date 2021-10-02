@@ -200,13 +200,8 @@ def test_imread(tmpdir):
 
 
 def test_imurl():
-    image_from_url = image_utils.imurl("https://nsemble.ai/assets/images/logo.png")
-    import PIL
-
-    assert isinstance(image_from_url, PIL.Image.Image)
-
     with pytest.raises(ValueError):
-        image_from_url = image_utils.imurl("nohttp://somehost.com/image.jpg")
+        _ = image_utils.imurl("nohttp://somehost.com/image.jpg")
 
 
 def test_expand_dims():
